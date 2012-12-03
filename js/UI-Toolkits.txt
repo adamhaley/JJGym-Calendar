@@ -1,0 +1,8 @@
+Dojo Toolkit	http://dojotoolkit.org/
+Sencha ExtJS   http://www.sencha.com/products/extjs
+JQuery Easy UI http://www.jeasyui.com/
+
+
+
+***** WINNER --> JQuery Slickgrid https://github.com/mleibman/SlickGrid/wiki
+SlickBack - for Backbone.js compatibility http://teleological.github.com/slickback/

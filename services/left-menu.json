@@ -1,0 +1,79 @@
+[
+	{
+		"label" : "METERS"
+		, "children" : [
+			{"label" : "All [15,000]"}
+			, {"label" : "STD15V1 [125]"}
+			, {"label" : "STD15V1 [284]"}
+			, {"label" : "STD15V1 [1,342]"}
+		]
+	}
+	, {
+		"label" : "DRLC"
+		, "children" : [
+			{
+				"label" : "Events" 
+				, "children" : [
+					{"label" : "All [8]"}
+					, {"label" : "Pending [1]"}
+					, {"label" : "Active [1]"}
+					, {"label" : "Completed [6]"}
+				]
+			}
+
+			, {
+				"label" : "Profiles"
+				, "children" : [
+					{"label" : "PM Load -1%"}
+					, {"label" : "PM Load -2%"}
+					, {"label" : "Temp 100+"}
+				]
+			}
+		]
+	}
+	, {
+		"label" : "MESSAGES"
+		, "children" : [
+			{
+				"label" : "Messages"
+				, "children" : [
+					{"label" : "All [8]"}
+					, {"label" : "Pending [1]"}
+					, {"label" : "Active [1]"}
+					, {"label" : "Completed [6]"}
+				]
+			}
+			, {
+				"label" : "Profiles"
+				, "children" : [
+					{"label" : "Flood Watch"}
+					, {"label" : "Extreme Heat"}
+					, {"label" : "Hurricane Watch"}
+				]
+			}
+		]
+	}
+	, {
+		"label" : "GROUPS"
+		, "children" : [
+			{"label":"All [15,000]"}
+			,{"label":"Pilot 01 [5,000]"}
+			,{"label":"Pilot 02 [5,000]"}
+			,{"label":"Pilot 03 [5,000]"}
+			,{"label":"Coastal Homes [234]"}
+			,{"label":"Low Income [3,211]"}
+			,{"label":"Pools [1,231]"}
+			,{"label":"EV [564]"}
+			,{"label":"HVAC [5,000]"}
+		]
+	}
+	, {
+		"label" : "HAN INVENTORY"
+		, "children" : [
+			{"label":"All [5,000]"}
+			,{"label":"Unjoined [3,200]"}
+			,{"label":"Joined [1,209]"}
+			,{"label":"IHD [238]"}
+		]
+	}
+]	

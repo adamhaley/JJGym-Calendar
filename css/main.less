@@ -1,0 +1,167 @@
+@import url(functions.less);
+
+body{
+	font-family:arial,helvetica,sans-serif;
+	font-size:11px;
+	margin:0;
+	padding:0;
+	line-height: 1.5em;
+	background-color:#fff;
+}
+
+b{font-size: 110%;}
+em{color: red;}
+
+header{
+
+	.gradients(#282828,#3f3f3f);
+
+	height: 80px; /*Height of top section*/
+	
+	h1{
+		margin: 0;
+		padding-top: 15px;
+		color:#fff;
+		text-shadow: 1px 0 0.2em #000;
+		// color: #9c9c9c;
+	}
+	
+	margin-bottom:0px;
+}
+
+nav#mainnav{
+	position:relative;
+	height:40px;
+	top:10px;
+
+	.gradients(#dfdfdf,#9c9c9c);
+
+	// background-color:#9c9c9c;
+	margin:0px;
+	padding:5px;
+	font-size:1.5em;
+
+	border-top:1px solid #6f6f6f;
+	border-bottom:1px solid #6f6f6f;
+
+	ul{
+		li{
+			display:inline-block;
+			margin-right:1.3em;
+			a{
+				text-decoration:none;
+				color:#eeeeee;
+
+				text-shadow: 1px 1px 0.2em #000;
+				&:hover{
+					color:#fff;
+				}
+			}
+		}
+	}
+
+	ul#main{
+		position:absolute;
+		left:20px;
+		top:10px;
+		list-style-type:none;
+	}
+
+	ul#aux{
+		position:absolute;
+		right:20px;
+		top:10px;
+		list-style-type:none;
+	}
+	
+	.box-shadow(0,2px,4px,#9c9c9c);
+}
+
+nav#bottomnav{
+	// background-color:#7f7f7f;
+	font-size:1.2em;
+	height:30px;
+	padding:5px;
+
+	ul{
+	
+		list-style-type:none;
+		li{
+			display:inline-block;
+			margin-right:1em;
+			a{
+				color:#7f7f7f;
+			}
+
+		}
+	}
+}
+
+#left-menu{
+	margin-top:20px;
+	margin-left:20px;
+}
+
+#breadcrumbs{
+	// .gradients(#282828,#3f3f3f);
+	background-color:#505050;
+	height:35px;
+	width:100%;
+}
+#contentwrapper{
+	float: left;
+	width: 100%;
+}
+
+#grid{
+	margin-top:20px;
+	height:900px;
+	border:1px solid #6f6f6f;
+
+}
+
+
+
+#contentcolumn{
+	margin: 0 199px 0 230px; /*Margins for content column. Should be "0 RightColumnWidth 0 LeftColumnWidth*/
+}
+
+#leftcolumn{
+	float: left;
+	width: 230px; /*Width of left column*/
+	min-height:700px;
+	margin-left: -100%;
+	// background: #d1d1d1;
+	overflow:auto;
+	border-right:1px solid #6f6f6f;
+}
+
+#rightcolumn{
+	float: left;
+	width: 198px; /*Width of right column*/
+	min-height:700px;
+	margin-left: -200px; /*Set left marginto -(RightColumnWidth)*/	
+	// background: #d1d1d1;
+	voerflow:auto;
+	border-left:1px solid #6f6f6f;
+}
+
+footer{
+	clear: left;
+	width: 100%;
+	border-top:1px solid #6f6f6f;
+	text-align: center;
+	padding: 4px 0;
+	a{
+		text-decoration:none;
+		color: #d1d1d1;
+		&:hover{
+			color:#fff;
+		}
+	}
+}
+
+.inner{
+	margin: 10px; /*Margins for inner DIV inside each column (to provide padding)*/
+	margin-top: 0;
+}
