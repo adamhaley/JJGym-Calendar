@@ -1,0 +1,354 @@
+<?
+/**
+*Auto generate sql for inserting, updating,deleting,selecting data for a resource object
+*@package sql_generator
+*@category Database
+*/
+class sql_generator{
+
+	var $robj;
+	var $adminfields = 1;
+	
+	/**
+	*constructor
+	*@param resource $robj optionally pass the resource object you want to use for sql generation.If you don't pass a resource object here, you will need to call 
+	*{@link sql_generator::set_resource()} before you can generate any sql queries
+	*/
+	function sql_generator($robj = ''){
+		if($robj){
+			$this->resource = $robj;
+
+		}
+	}
+	
+	/**
+	*generate name of appropriate sql file according to naming convention sql/[resource name]_[action].sql
+	*so the select file for a resource class person would return sql/person_select.sql
+	*@param string $action  ie: select delete count update
+	*@return string filename if file exists, otherwise false
+	*/
+	function sql_file_name($action){
+                global $message;
+ 		global $buildpath;
+		global $modulepath;
+ 
+		$paths = array($modulepath,$buildpath);
+                $name = get_class($this->resource);
+ 		foreach($paths as $path){
+			$file = $path . "sql/$name" . "_" . "$action.sql";
+			if(file_exists($file)){
+				return $file;
+			}
+		}
+		return false;
+        }
+
+	/**
+	*@param string $which action - ie: select delete count update 
+	*@return string sql query 
+	*/
+	function get_sql($which){
+		$sql = '';
+		if(method_exists($this,$which)){
+			eval("\$sql =  \$this->$which();");
+		}	
+		return $sql;
+	}
+
+	/**
+	*This is where you set the {@link resource} object if you didn't pass it to the constructor.
+	*@param resource $robj resource object
+	*/
+	function set_resource($robj){
+		$this->resource = $robj;
+	}
+	
+	/**
+	*@param string $action ie: select delete update count
+	*@return string sql query or false on failure
+	*/
+	function read_sql_from_file($action){
+		$filename = $this->sql_file_name($action);
+                if($filename){
+                        //read and return
+                        $tobj = new template($filename);
+                        $tobj->parse_resource($this->resource);
+
+			$tobj->parse_key('uid',$_SESSION['uid']);
+
+                        return $tobj->get_source();
+                }
+		return false;
+	}
+
+	/**
+	*@return string select sql query
+	*/
+	function select(){
+		$robj = $this->resource;
+		
+		//first read and return sql file if sql file exists
+		if($sql = $this->read_sql_from_file('select')){
+			return $sql;
+		}
+		//otherwise fall through and generate sql query
+
+		$sql = "select ";
+		foreach($robj->props as $k => $v){
+			if($k != 'id' && $v['sql'] != '0'){
+				$sql .=  $robj->get_table() . '.' . $k . ', ';
+			}
+		}
+
+		$sql = preg_replace("/, $/","",$sql);
+		
+		$sql .= " from ";
+		$sql .= $robj->get_table();	
+		
+		$sql .= " where flag_rec_status='1'";
+		
+		
+		return $sql;		
+	}
+
+	/**
+	*@return string select distinct sql query
+	*/
+	function select_distinct(){
+		$sql = $this->select();
+		$sql = str_replace("select ","select distinct",$sql);
+		return $sql;
+	}
+
+	/**
+	*@return string update sql query
+	*/
+	function update(){
+		//build update sql
+		//echo "in update query ";
+
+		if($sql = $this->read_sql_from_file('update')){
+                        return $sql;
+                }
+
+		$robj = $this->resource;
+
+		$sql = "update "; 
+		$sql .= $robj->get_table();
+		$sql .= " set ";
+		foreach($robj->props as $k => $v){
+			$field = $k;
+			//use type class to get value
+			$value = $v['value'];
+			if($v['datatype'] == 'date'){
+				$value = $this->_convert_date_to($value);
+			}
+			
+                	$value = mysql_real_escape_string($value);
+			//add to query
+			if($field != $robj->get_id_string() && $k != 'id' && $v['sql'] != '0'){
+				$sql .= " $field = '$value',";
+			}
+		}
+		//if adminfields flag is set, add those to be updated
+                if($this->adminfields){
+                	$sql .= $robj->get_table() . ".admin_update_id='" . $_SESSION['uid'] . "',";
+                        $sql .= $robj->get_table() . ".admin_update_ts=now()";
+                }
+			
+		$sql = preg_replace("/,$/","",$sql);
+		return $sql;
+	}
+
+	/*
+	function convert_date_from($date){
+		if($date == '0000-00-00'){
+                        return '00/00/00';
+                }
+                if($date){
+                        if (($date = strtotime($date)) === -1) {
+                                $message->add("error","Error in resource:format_datetime - The string ($str) is bogus");
+                        } else {
+                                $date = date('n/d/y ',$date);
+                        }
+                }
+                return $date;
+	}
+	*/
+
+	function _convert_date_to($date){
+                //convert to DB-usable date
+                if($date == '00/00/00'){
+			return '0000-00-00';
+		}
+		$unixtime = strtotime($date);
+		$date = date('Y-m-d',$unixtime);
+
+		return $date;
+	}
+
+	/**
+	*@return string insert sql query
+	*/
+	function insert(){
+		if($sql = $this->read_sql_from_file('insert')){
+                        return $sql;
+                }
+			$robj = $this->resource;
+			$sql = 'insert into ' . $robj->get_table() . '(';
+		
+			foreach($robj->props as $k => $v){
+				if($k != $robj->get_id_string() && $k != 'id' && $v['sql'] != '0'){	
+					$sql .= $k . ",";
+				}
+			}		
+			
+			//if adminfields flag is set, add those to be inserted
+                        if($this->adminfields){
+                                $sql .= $robj->get_table() . ".admin_insert_id,";
+                                $sql .= $robj->get_table() . ".admin_insert_ts";
+                        }
+
+			$sql = preg_replace("/,$/","",$sql);
+			$sql .= ")
+			values
+			(";
+			
+			foreach($robj->props as $k => $v){
+				$value = $v['value'];
+				if($v['datatype'] == 'date'){
+                                	$value = $this->_convert_date_to($value);
+                        	}
+
+				$value = mysql_real_escape_string($value);
+				
+				if($k != $robj->get_id_string() && $k != 'id' && $v['sql'] != '0'){
+					$sql .= " '" . $v['value'] . "',";
+				}
+			}
+
+			 //if adminfields flag is set, add those to be inserted
+                        if($this->adminfields){
+                                $sql .= "'" . $_SESSION['uid'] . "' ,";
+                                $sql .= " now()";
+                        }		
+
+			$sql = preg_replace("/,$/","",$sql);
+			$sql .= ")";
+			return $sql;
+	}
+
+	/**
+	*@return string count sql query
+	*/
+	function count(){
+		if($sql = $this->read_sql_from_file('count')){
+                        return $sql;
+                }
+		$robj = $this->resource;
+		$sql = "select count(*) from " . $robj->get_table() . " where flag_rec_status='1' ";
+		return $sql;
+	}
+
+	/**
+	*@return string delete sql query
+	*/
+	function delete(){
+		if($sql = $this->read_sql_from_file('delete')){
+                        return $sql;
+                }
+	
+		$robj = $this->resource;
+		$sql = "update " . $robj->get_table() .  " set  flag_rec_status='0' where " . $robj->get_table() . "." . $robj->get_id_string() . "='" . $robj->get_prop($robj->get_id_string()) . "';";	
+		return $sql;
+	}
+	
+	 /**
+        *@param array $conditions
+        *@return string SQL conditional query to be placed after the where clause
+        *This function takes a special coded associative array and builds an sql conditional statement.
+        *The simplest way to use it is pass it raw key values.The keys represent resource object properties
+        *the value would be the value that would be added to the where clause. 
+        *
+        *For example if you pass array('category' => 'Character') it would build an sql query that would 
+        *look for all the resources of the $this->resource class that had a property of category with a value of 'Character'.
+        *
+        *You can also put a special token on to the end of the key to represent an operator such as 
+        *less than, more than, equal to, contains, etc.
+        *To do that, concatinate |(operator)| to the end of the key
+        *for example - if you pass sql_conditions array("id|>=|" => "100")
+        *it would return "where id >= 100"   
+        */
+	function where_clause($conditions){
+                global $message;
+                $robj = $this->resource;
+
+                if(!is_array($conditions)){
+                        $conditions = array();
+                }
+
+                //echo "in sql_conditions";
+
+                $cnt = 0;
+                $sql = " and" ;
+
+                foreach($conditions as $k => $v){
+                        $value = $v;
+                        //echo " $k :: $v <br />";
+                        //extract the operator from the key
+                        preg_match("/\|(.*)\|/",$k,$matches);
+                        $opr = $matches[1] ? $matches[1] : ' = ';
+
+                        //echo "opr is $opr <br />";
+                        //remove operator from key
+                        $k = preg_replace("/\|.*\|/","",$k);
+
+                        //get fieldname from the resource property name
+                        $key = $k;
+
+                        //if value is empty continue to the next iteration of the loop
+                        if($value=='' && $opr != '!='){
+                                continue;
+                        }
+
+                        //if the key isn't order_by  or limit
+                        if($key != 'order_by' && $key != 'group_by' && $key != 'limit' ){
+                                //this gets the database field
+                                $field = $robj->get_table() . "." . $key;
+                                //add it to the query
+                                if(strstr($opr,'like')){
+                                        $sql .= " $field $opr '%$value%' and";
+                                }else if(strstr($opr,'between')){
+                                        $sql .= " $field $opr $value and";
+                                }else{
+                                        $sql .= " $field $opr '$value' and";
+                                }
+                                //increment the counter
+                                $cnt++;
+                        }
+                }
+
+                //remove any and or where clauses
+        	$sql = preg_replace("/and$/","",$sql);
+        	$sql = preg_replace("/where$/","",$sql);
+        	$groupby = $conditions['group_by']? $conditions['group_by'] : '';
+                //add order by clause
+        	$orderby = $conditions['order_by']? $conditions['order_by'] : $this->resource->get_id_string();
+	
+                if($groupby = $conditions['group_by']){
+                        $sql .= " group by $groupby";
+                }
+
+                //add order_by to the sql query
+                $sql .= " order by " . $orderby;
+
+                //add limit clause      
+                if($l = $conditions['limit']){
+                        $sql .= " limit $l";
+                }
+
+                //return the sql query
+                return $sql;
+	}
+}
+?>

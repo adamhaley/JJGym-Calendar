@@ -1,0 +1,161 @@
+<?php
+/**
+*Global Object.Keeps a running list of messages throughout the request.
+*Messages are categorized by type and can be added at any point during the request. At the end of the request the {@link view} will use this object to display messages.
+*<code>
+*global $message;// $message object is instantiated in variables.php
+*$message->add('confirmation','Hello World!');
+*$message->add('error',mysql_error());
+*
+*print_r($message->get_messages_array()); 
+*</code>
+*would produce something like: 
+*<code>Array 
+*	( 
+*		[0] => Array ( 
+*				[message] => Hello World! 
+*				[type] => confirmation 
+*				) 
+*		[1] => Array ( 
+*				[message] => MYSQL Error: Column 'id_production' in where clause is ambiguous 
+*				[type] => error 
+*				) 
+*	)
+*</code>
+*@package message
+*/
+class message{
+	/**
+	*@var array The messages array. this array is a running list of messages and their types.
+	*/
+	var $messages;
+	/**
+	*constructor
+	*/
+	function message(){
+		$this->messages = array();
+	}
+	
+	/**
+	*adds a message to the running message list
+	*Example:
+	*<code>
+	* $message->add('confirmation','Hello World!');
+	*</code>
+	*@param string $type type of message - ie: error, warning, confirmation
+	*@param string $message text of the message
+	*/
+	function add($type,$message){
+		//add the error to the error list
+		$this->messages[] = array('message' => "$message","type" => "$type");
+		
+	}	
+
+	/**
+	*
+	*Returns html text of all the messages complete with class attributes on divs representing message type.
+	*Then you can use CSS to display the messages differently depending on what type they are.
+	*Example:
+	*<code>
+	*<div class="messages">
+	*	<div class="confirmation">Hello World!</div>
+	*	<div class="error">MYSQL Error: Column 'id_production' in where clause is ambiguous</div>
+	*</div>
+	*</code>
+	*You could then use CSS to show the error message in red, or bring in an icon.
+	 *@return string messages html 
+	*/
+	function get(){
+		//return message list web-readable 
+		if($this->num_messages()){
+			$list = '<div class="messages">';
+			foreach($this->messages as $msgarray){
+				
+			
+					$type = $msgarray['type'];
+					$msg = $msgarray['message'];
+					$list .= "<div class='" . $type . "'>\n";
+					$list .=  $msg . "\n<br />";
+					$list .= "</div>\n";
+			
+			}
+			$list .= '</div>';
+		}
+		return $list;
+	}
+	
+	/**
+	*Returns messages as XML with message type as an attribute of the message element.
+	*Example:
+	*<code>
+	*<messages>
+	*	<message type="confirmation">
+        *               Hello World!
+        *       </message>
+	*	<message type="error">
+	*		MYSQL Error: Column 'id_production' in where clause is ambiguous
+	*	</message>
+	*</messages>
+	*</code>	
+	*There is an XSLT Template that transforms this into usable XHTML in the same format as {@link message::get()}.
+	*@return string messages xml
+	*/
+	function get_xml(){
+		$messages = $this->get_messages_array();
+		
+		$out = '';
+		$out .= '<messages>';
+		if(count($messages)){
+			foreach($messages as $k => $array){
+			
+			$out .= "<message type='" . $array['type'] . "'>" . $array['message'] . '</message>';
+		
+			}
+		}
+		$out .= '</messages>';
+		return $out;
+	}
+	
+	/**
+	*Gets the total number of messages
+	*@return int number of messages in message list
+	*/
+	function num_messages() {
+		return count($this->messages);
+	}
+	/**
+	*Gets the number of messages classified as type 'error'
+	*@return int number of messages classified as type 'error'
+	*/
+	function num_errors() {
+		$i=0;
+		foreach($this->messages as $message){
+			if($message['type'] == 'error'){
+				$i++;
+			}	
+		}
+		return $i;
+	}
+
+	/**
+	*Returns the internal messages array in raw form
+	*Array is structured like so:
+	*<code>Array 
+	*       ( 
+	*               [0] => Array ( 
+	*                               [message] => Hello World! 
+	*                               [type] => confirmation 
+	*                               ) 
+	*               [1] => Array ( 
+	*                               [message] => MYSQL Error: Column 'id_production' in where clause is ambiguous 
+	*                               [type] => error 
+	*                               ) 
+	*       )
+	*</code>
+	*@return array list of messages
+	*/
+	function get_messages_array(){
+		return $this->messages;	
+	}
+}
+?>

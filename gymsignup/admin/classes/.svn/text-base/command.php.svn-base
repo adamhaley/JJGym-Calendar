@@ -1,0 +1,258 @@
+<?
+/**
+*
+*Abstract superclass for all commands in the system.
+*
+*Commands are invoked by {@link front_controller} according to request parameters. 
+*Each command holds most of the Domain Business Logic of a request.
+*Implements the Command Pattern 
+*@package command
+*@category ModelViewController
+*
+*@author Adam Haley <adam.haley@disney.com>
+*@access public
+*@link http://www.martinfowler.com/eaaCatalog/modelViewController.html
+*@link http://www.martinfowler.com/eaaCatalog/frontController.html
+*@link http://en.wikipedia.org/wiki/Command_pattern
+*/
+abstract class command{	
+    	/**
+	*@var string path to xsl stylesheet. absolute or relative from the root procedural script
+	*/
+	var $stylesheet;
+	/**
+	*@var view view object
+	*/
+	var $view;
+	/**
+	*@var array An array of {@link resource} objects.These will be turned into xml by the {@link view}
+	*/
+	var $rarray = array();
+	/**
+	*@var array An array of key value pairs that will be turned into xml by the {@link view} and placed under the <aux> element.
+	*/
+	var $auxarray = array();
+	/**
+	*@var bool 1 or 0 flag whether to paginate the xml. This is used internally...
+	*/
+	var $pageresults = 1;
+
+	/**
+	*This is where the bulk of the Domain Logic will go.
+	*
+	*You will override this method in your command subclass.
+	*You will load some {@link resource} objects and perform some business logic with them. Then, you will call {@link command::set_resource_array()}, passing an array of 
+	*{@link resource} objects you want to use in the {@link view}.After that, you will exit.<br />
+	*If you want the {@link view} to be built automatically by {@link front_controller}, don't return anything.
+	*Otherwise, return what you want {@link front_controller} to pass on to the browser.
+	*/
+	function process(){
+		return;
+	}
+
+	/**
+	*instantiate and run a command
+	*@param string $commandname name of {@link command} to run
+	*/
+	function process_sub_command($commandname){
+		global $message;
+		if(class_exists($commandname)){
+			eval("\$command = new $commandname;");
+			$command->process();
+			$this->copy_instance_vars($command);
+		}else{
+			$message->add("warning","command $commandname not found when trying to run as sub-command of " . get_class($this));
+			return false;
+		}
+	}
+
+	/**
+	*@param resource $robj
+	*@param array $conditions conditions array formatted for {@link sql_generator::where_clause()}
+	*@param int $perpage number of resources to return at a time
+	*/
+	function paginate_resource($robj,$conditions,$perpage='20'){
+		$total = $robj->count($conditions);
+
+                //set auxarray so it bubbles up to xml
+                $this->auxarray['perpage'] = $perpage;
+                $this->auxarray['totalcount'] = $total;
+
+                //build limit clause
+                $this->perpage = $this->perpage? $this->perpage : $perpage;
+                $pp = $this->perpage;
+		$cp = $_GET['page'] ? $_GET['page'] - 1 : 0;
+		$start = $cp * $pp;
+                $clause = "$start,$pp";
+
+		$conditions['limit'] = $clause;
+                //end paginator code                
+
+                $rarray = $robj->get_all($conditions);
+		return $rarray;
+	}
+	
+	/**
+	*Not yet implemented.Takes a pre-existing {@link resource} array and slices it for the current page
+	*/
+	function paginate_resource_array(){
+
+	}
+
+	/**
+	*Sets the  $rarray property. Pass the resources you want to use in the {@link view}. The {@link view} will turn them into XML, then process them via XSLT into XHTML.
+	*@param array $rarray array of {@link resource}s
+	*/
+	function set_resource_array($rarray){
+		$this->rarray = $rarray;
+	}
+
+	/**
+	*returns the {@link resource} array. This array is set using {@link command::set_resource_array()} and {@link command::resource_array_add()}
+	*@return array array of {@link resource}s
+	*/
+	function get_resource_array(){
+		return $this->rarray;
+	}
+	/**
+	*merges a new {@link resource} array with the existing {@link resource} array
+	*@param array $rarray array of {@link resource}s
+	*/
+	function resource_array_add($rarray){
+		$this->rarray = array_merge($this->rarray,$rarray);
+	}
+	/**
+	*@param array $auxarray arbitrary associative array that will be turned into xml under the <aux> node
+	*keys are turned into tags, with values inside
+	*/
+	function set_aux_array($auxarray){
+		$this->auxarray = $auxarray;
+	}
+	/**
+	*merges given array with current auxarray
+	*@param array $auxarray arbitrary associative array that will be turned into XML in the {@link view} under the <aux> node
+	*/
+	function aux_array_add($auxarray){
+		$this->auxarray = array_merge($this->auxarray,$auxarray);
+	}
+	/**
+	*this will be turned by the {@link view} in to a <heading> node under <aux> and is designed to be used in the XSLT as a page heading.
+	*@param string $text heading text.
+	*/
+	function set_heading($text){
+		$this->aux_array_add(array('heading' => $text));
+	}
+	/**
+	*@return string contents of the $auxarray[heading] - which is used by the XSLT as a page heading
+	*/
+	function get_heading(){
+		return $this->auxarray['heading'];
+	}
+	/**
+	*this function copies all of the instance vars - $rarray, $auxarray etc from the given command to the current command
+	*@param command $commandobj command object to copy instance variables from
+	*/
+	function copy_instance_vars($commandobj){
+		$this->set_resource_array($commandobj->rarray);
+		$this->set_aux_array($commandobj->auxarray);
+		if($commandobj->pageresults){
+			$this->pageresults = 1;
+			$this->auxarray['pageresults'] = 1;
+		}
+	}
+
+	/**
+	*this function sets the current command's {@link view}
+	*@param view $viewobj the {@link view} object to use for this command
+	*/
+	function set_view($viewobj){
+                $this->view = $viewobj;
+        }
+
+	/**
+	*looks for a class nav_$commandname where $commandname is the name of the specific command subclass, minus preceding 'c_' naming convention.
+	*If it doesn't find that, looks for a class nav_$modulename where $modulename is the name of the current module (lowercase, spaces converted to underscores).
+	*then instantiates the class it finds, and passes it to the view using {@link view::set_navigation()}
+	*@param view $viewobj
+	*/	
+	function _set_view_navigation($viewobj){
+		global $modulename;
+		$navname = "nav_" . preg_replace("/^c_/","",get_class($this));
+		if(class_exists($navname)){
+			eval("\$navobj = new $navname;");
+		}else if(class_exists("nav_" . $modulename)){
+			eval("\$navobj = new nav_$modulename;");
+		}else{
+			$navobj = new nav;
+		}
+		$viewobj->set_navigation($navobj);
+		return $viewobj;
+	}
+
+	/**
+	*initialize and return the view object
+        *internal use only
+	*@return view view object
+	*/
+	function _initialise_view(){
+		if(is_object($this->view)){
+                         $viewobj = $this->view;
+                }else{
+                        $commandname = preg_replace("/^c_/","",get_class($this));
+                        $viewname = "v_$commandname";
+                        $viewname = class_exists($viewname)? $viewname : 'view';
+
+                        eval("\$viewobj = new $viewname;");
+                }
+		return $viewobj;
+	}
+
+	/**
+	*do various things to prepare the view, mainly transfers instance vars - $rarray, $auxarray, etc to the view.
+        *internal use only
+	*@param view $viewobj
+	*/
+	function _prepare_view($viewobj){
+		//set heading
+		if(!$this->get_heading()){
+			$heading = preg_replace("/^c_/","",get_class($this));
+			$heading = str_replace("_"," ",$heading);
+			$heading = ucwords($heading);
+			$this->set_heading($heading);
+		}		
+	       //add rarray to view
+                $viewobj->set_resource_array($this->rarray);
+		//add auxarray to view
+		$viewobj->set_aux_array($this->auxarray);
+		//override this guy in your commands if you need to do special stuff
+		$viewobj = $this->_set_view_navigation($viewobj);
+		$viewobj->set_stylesheet($this->stylesheet);
+
+		return $viewobj;
+	}
+
+	/**
+	*Calls {@link command::_initialise_view()}, then {@link command::_prepare_view()}, then returns the {@link view} object.
+	*This function is used by {@link front_controller} to get the {@link view}
+	*@return view view object
+	*/
+	function get_view(){
+		$viewobj = $this->_initialise_view();
+		$viewobj = $this->_prepare_view($viewobj);
+		return $viewobj;
+	}
+	
+	/**
+	*Sets the XSL stylesheet to use in the view.
+	*if force is set to 1, it will set the stylesheet regardless of whether the stylesheet is already set.
+        *otherwise it doesn't set the stylesheet if it has been already set 
+	*@param string $path path to xslt file - absolute, or relative to root procedural script.
+	*@param int $force optional 1 or 0.
+	*/
+	function set_stylesheet($path,$force=0){
+		if($force || !$this->stylesheet){
+			$this->stylesheet = $path;	
+		}
+	}
+}
+?>

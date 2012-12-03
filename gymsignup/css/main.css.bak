@@ -1,0 +1,15 @@
+table.calendar{
+	border:1px solid black;
+}
+
+.day{
+	width:150px;
+	height:150px;
+	border:1px solid black;
+	margin-top:0px;
+	margin-left:0px;
+}
+
+p.copyright{
+	font-size: 8px;
+}

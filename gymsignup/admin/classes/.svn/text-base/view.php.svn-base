@@ -1,0 +1,298 @@
+<?
+/**
+*Implements the "View" in Model-View-Controller.
+*Builds XML from an array of {@link resource} objects. Either returns XML to browser, or processes via an XSLT stylesheet to XHTML.
+*
+*@link http://en.wikipedia.org/wiki/XSLT
+*@link http://www.martinfowler.com/eaaCatalog/modelViewController.html
+*@link http://www.martinfowler.com/eaaCatalog/transformView.html
+*@package view
+*@category ModelViewController
+*
+*/
+class view{
+	/**
+	*@var DOMDocument
+	*/
+	var $document;
+	/**
+	*@var string
+	*/
+	var $stylesheet;
+	/**
+	?@var stylesheetpath
+	*/
+	var $stylesheetpath;
+
+	/**
+	*@var array
+	*/
+	var $resources;
+	/**
+	*@var array
+	*/
+	var $rarray;
+	/**
+	*@var array
+	*/
+	var $auxarray;
+	/**
+	*@var nav
+	*/
+	var $nav;
+
+
+	/**
+	*Gets XML from {@link view::build_xml()}. If $_GET['xsl'] = 'false' or the $stylesheet class var is empty, it returns the xml, oherwise it calls {@link view::process_xsl()}  and returns the resulting xhtml.
+	*@return string xml or xhtml output. 
+	*/
+	function build(){
+		$xml = $this->build_xml();
+		 if($_GET['xsl'] == 'false' || !$this->get_stylesheet()){
+                        
+                        header("content-type: text/xml");
+                        //replace stylesheet
+                        return  $xml;
+                
+                //else proscess xsl and send html to browser
+                }else{
+                        header("content-type: text/html");
+
+                        $dom = $this->document;
+                        $dom->loadXML($xml);
+
+                        return $this->process_xsl($dom);
+                }
+
+	}
+
+	/**
+	*This is the function that actually builds the XML.It calls on {@link resource::get_meta_xml()} and {@link resource::get_resource_xml()}
+	*@return string xml. 
+	*/
+	function build_xml(){
+		global $buildpath;
+                global $path;
+                global $modulename;
+		global $webpath;
+		global $webservicespath;
+
+		$this->document = new DOMDocument('1.0', 'UTF-8');
+                
+                $this->mode = $_SESSION['mode']? $_SESSION['mode'] : 'live';
+
+                $this->nav = is_object($this->nav)? $this->nav : new nav;       
+                //$this->document->formatOutput = true;
+                
+                
+                $resourcearray = $this->rarray? $this->rarray : array();
+                $auxarray = $this->auxarray? $this->auxarray : array();
+
+		//ADD MODULE NAME
+		$auxarray['module_name'] = $modulename;
+
+		//get classes & build metadata prototypes
+		$classes = array();
+		foreach($resourcearray as $robj){
+			$classes[] = get_class($robj);
+		}
+		foreach(array_unique($classes) as $class){
+			eval("\$robj = new $class;");
+			
+			$pxml .= "<prototype class='$class'>\n";
+			$pxml .= $robj->get_meta_xml() . "\n";
+			$pxml .= "</prototype>\n";
+
+		}
+
+                $resxml = "<resources>\n";
+                if(is_array($resourcearray)){
+                        foreach($resourcearray as $robj){
+				/*
+				$resxml .= "<resource class='" . get_class($robj) . "'>\n";
+                                $resxml .= $robj->get_props_xml_use_attributes() . "\n";       
+				$resxml .= "</resource>\n";
+                        	*/
+				$resxml .= $robj->get_resource_xml() . "\n";
+			}
+                }
+                $resxml .= "</resources>\n";
+                global $message;
+               
+                //BUILD XML STRING
+                
+                $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+
+        if($_GET['xsl'] != 'false' && $this->get_stylesheet()){
+                $xml .= '<?xml-stylesheet href="xsl/' . $this->get_stylesheet() . '" type="text/xsl"?>';
+        }
+
+$xml .= '<page>
+  <session>
+                ' . $this->array_to_xml($_SESSION,0) . ' 
+  </session>
+  <request>
+   ' . $this->array_to_xml(array('res' => $_REQUEST['res'])) . $this->array_to_xml($_GET) . $this->array_to_xml($_POST) . '
+  </request>
+  <get>
+   ' . $this->array_to_xml($_GET) . '
+  </get>
+  ' . $message->get_xml() . '
+  <aux>
+  ' . '<xsl>';
+$xml .= $this->get_stylesheet();
+$xml .= '</xsl>' . $this->array_to_xml($auxarray) . '
+	<webpath>' . $webpath . '</webpath>	  
+	<webservicespath>' . $webservicespath . '</webservicespath>
+</aux>
+  <navigation>
+  ' .  $this->nav->return_xml() . '
+  </navigation>
+  <content>
+ ' . $pxml . $resxml . '
+  </content>
+</page>';
+                //END BUILD XML STRING
+                //encode xml utf8
+                return utf8_encode($xml);
+
+	}
+
+	/**
+	*This is a helper function that turns an associative array into a string xml fragment
+	*TODO - create a seperate xml_generator class
+	*@param array $array associative array you want to be turned into xml
+	*@return string xml fragment
+	*/
+	function array_to_xml($array = array(),$recursive=1){
+		$out = "";
+		if(is_array($array)){
+			foreach($array as $key => $value){	
+				$value = str_replace("&","&amp;",$value);
+				$value = str_replace("<","&lt;",$value);
+				$value = str_replace(">","&gt;",$value);
+			
+				$out .= "<$key>";
+				$out .= $value;
+					if(is_array($value) && $recursive){
+						$out .= $this->array_to_xml($value);
+					}
+				$out .= "</$key>\n";
+			}
+		}
+		return $out;
+	}
+	
+	/**
+	*Legacy - basically a wrapper for {@link view::get_xsl_path()}
+	*@return string path to xsl file
+	*/
+	function get_stylesheet(){
+		return $this->stylesheet? $this->stylesheet : $this->get_xsl_path();
+	}
+	/**
+	*Intelligent XSL Finder.
+        *Evaluates query string and returns xsl to process in view.
+        *searches xsl's and checks for an xsl named [$_GET['c']]_[$_GET['res']].xsl 
+        *If not found looks for [$_GET['c']].xsl
+        *If that's not found, defaults to [$modulename].xsl
+	*@return string path to xsl file
+	*/
+    function get_xsl_path(){
+                global $buildpath;
+		global $globalpath;
+                global $modulename;
+
+                //set up search params
+                $xsls = array();
+                //two xsl names to try - defaults last
+                $xsls[] = $_REQUEST['c'] . '_' . $_REQUEST['res'] . '.xsl';
+                $xsls[] = $_REQUEST['c'] . '.xsl';
+                $xsls[] = $modulename . '.xsl';
+
+		foreach($xsls as $xsl){
+			if(file_exists('xsl/' . $xsl)){
+				$this->set_stylesheetpath('');
+				return $xsl;
+			}else if(file_exists($buildpath . 'xsl/' . $xsl)){
+				$this->set_stylesheetpath($buildpath);
+				return $xsl;
+			}else if(file_exists($globalpath . 'xsl/' . $xsl)){
+				$this->set_stylesheetpath($globalpath);
+				return $xsl;
+			}
+		
+		}
+    }
+
+	function set_stylesheetpath($path){
+		$this->stylesheetpath = $path;
+	}
+	/**
+	*sets string xsl stylesheet filename
+	*@param string $path path to xsl file
+	*/
+	function set_stylesheet($path){
+		if(!$this->stylesheet){
+			$this->stylesheet = $path;
+		}	
+	}
+
+	/**
+	*sets the navigation object
+	*@param nav navigation object
+	*/
+	function set_navigation($navobj){
+		$this->nav = $navobj;
+	}
+
+
+	/**
+	*sets the resource array 
+	*@param array $array
+	*/
+	function set_resource_array($array){
+		$this->rarray = $array;
+	}
+
+	/**
+	*sets the aux_array to given associative array
+	*@param array $array 
+	*/
+	function set_aux_array($array){
+		$this->auxarray = $array;
+	}
+
+	/**
+	*Takes string xml and processes with xsl stylesheet, returning output
+	*@param string $xml xml to process
+	*@return string xhtml result of processing with the stulesheet
+	*/
+	function process_xsl($xml){
+		global $globalpath;
+		global $buildpath;
+		global $modulepath;
+		$xslpath = $this->stylesheet ? $this->stylesheet : $this->get_xsl_path();
+		$xslpath = $this->stylesheetpath . 'xsl/' . $xslpath;
+		$xsl = DomDocument::load($xslpath);  	
+	
+		$xslproc = new XSLTProcessor();
+		$xslproc->importStylesheet($xsl);
+		return $xslproc->transformToXML($xml);
+	}
+	
+	/**
+	*adds an element of given key and value to request node
+	*@param string $key 
+	*@param string $value
+	*/
+	function add_request_var($key,$value){
+		$dom = $this->document;
+		$reqnode = $dom->getElementByTagName("request");
+		$reqnode->appendChild($dom->createElement($key,$value));	
+		$this->document = $dom;
+	}
+	
+}
+
+?>

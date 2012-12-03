@@ -1,0 +1,12 @@
+<?php defined('SYSPATH') or die('No direct script access.'); ?>
+
+2009-01-31 12:54:52 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:54:52 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:54:56 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:54:56 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:55:02 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:55:02 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:55:04 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 12:55:04 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 13:34:10 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
+2009-01-31 13:34:10 -08:00 --- error: Uncaught PHP Error: call_user_func(Router::find_uri) [<a href='function.call-user-func'>function.call-user-func</a>]: First argument is expected to be a valid callback in file system/core/Event.php on line 209
