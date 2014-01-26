@@ -113,11 +113,7 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	          .success(checkAvailability)
 	          .error(function(res){
 	            console.log(res);
-	          })
-	          .then(function(){
-	          	console.log('attempting to apply the scope to selectpicker');
-	          	// angular.element('.selectpicker').scope().$apply();
-	          });  
+	          }); 
 	      }
 	     
 	      $scope.checkGymAvailability($scope.timeStart,$scope.timeEnd);
