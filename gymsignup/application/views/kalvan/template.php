@@ -5,26 +5,20 @@
 <title>
 The Kalvan's Practice Space Calendar
 </title>
+<link rel="stylesheet" href="js/bower_components/bootstrap/dist/css/bootstrap.css" />
+<link rel="stylesheet" href="js/bower_components/angular/angular-csp.css" /> 
 <link rel="stylesheet" href="http://www.jjgym.com/gymsignup/css/main.css" />
-<script language="javascript" src="http://www.jjgym.com/js/prototype.js" ></script>
-<script>
-function delete_event(id){
-	req = new Ajax.Request('<?php echo $_SERVER['SCRIPT_NAME']; ?>/calendar/delete_event?id=' + id,{onComplete:delete_event_complete});
-}
+<!-- <script language="javascript" src="http://www.jjgym.com/js/prototype.js" ></script>  -->
 
-function delete_event_complete(req){
-	window.location.reload();
-}
-
-</script>
 
 	<script type="text/javascript" src="http://www.jjgym.com/js/ckeditor/ckeditor.js"></script>
 	<script type="text/javascript">
-		CKEDITOR.replace( 'ckeditor',
-    {
-        toolbar : 'basic',
-        uiColor : '#fff'
-    });
+		var config = {
+        	toolbar : 'basic',
+        	uiColor : '#fff'
+    	}
+    	
+		CKEDITOR.replace( 'ckeditor',config);
 
 	</script>
 </head>
@@ -64,8 +58,15 @@ function delete_event_complete(req){
                 Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
                 Calendar app developed by Adam Haley using Kohana
         </div>
-
-
-
+	
+	<script type="text/javascript" src="js/bower_components/jquery/jquery.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular/angular.min.js"></script>
+	<script type="text/javascript" src="js/bower_components/bootstrap/dist/js/bootstrap.js"></script>
+	<script type="text/javascript" src="js/bower_components/moment/moment.js"></script>
+	<script type="text/javascript" src="js/bower_components/twix/bin/twix.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/timepicker/timepicker.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>
+	<script type="text/javascript" src="js/app.js"></script>
 </body>
 </html>

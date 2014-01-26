@@ -53,7 +53,7 @@ class Calendar_Controller extends Template_Controller {
 			$compdate = gmmktime(0,0,0,$month,$day,$year);
 			//echo gmmktime(0,0,0,date('n'),date('d'),date('Y')) . " comp to " . strtotime("$month-$day-$year") . " <br />";
 			if(isset($_SESSION['uid']) && $row->user_id == $_SESSION['uid'] && $now <=$compdate){
-                                $code .= " [<a href='#' onClick='delete_event(" . $row->id . ")' class='delete'>x</a>] ";
+                                $code .= " [<a href='#' data-id='" . $row->id . "'' onClick='delete_event(" . $row->id . ")' class='delete'>x</a>] ";
                         }
 			$code .= "<br /><div class='duration'>" . $comments . "</div>";
 
@@ -198,6 +198,7 @@ class Calendar_Controller extends Template_Controller {
 		
 		$event = new Event_Model;
 		$event->delete_event($id);
+		$this->template->content = '';
 	}
 
 	public function __call($method, $arguments)
