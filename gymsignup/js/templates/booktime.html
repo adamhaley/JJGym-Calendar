@@ -1,19 +1,10 @@
 <div class="modal-header">
-    <h3>Book Time: </h3>
+    <h3>Book Time</h3>
 </div>
 <div class="modal-body" >
 	
  <div class="row text-center" ng-controller="DatepickerCtrl">
-  <!-- <h3>{{dt | date: 'longDate'}}</h3> -->
-      <!--
-      <div style="display:inline-block;min-height:290px;">
-        <div class="well well-sm" ng-model="dt">
-          <datepicker show-weeks="showWeeks"></datepicker>
-        </div>
-      </div>
-      -->
 
-        
         <div class="col-md-2">
           <button class="btn btn-default prev" ng-click="prev()">
             <span class="glyphicon glyphicon-chevron-left"></span>
@@ -22,7 +13,7 @@
         <div class="col-md-6">
             
             <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min="minDate" max="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min="minDate" max="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" ng-change="changed()" />
               <span class="input-group-btn">
                 <button class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -46,7 +37,7 @@
             <timepicker hour-step="1" minute-step="30" show-meridian="true" value="timeStart" ></timepicker>
       </div>
     </div>
-    <div class="col-md-2 text-center"><br /><h4>to</h4> </div>
+    <div class="col-md-2 text-center"><br /><br /><h4>to</h4> </div>
       <div class="col-md-4">
         <div ng-model="timeEnd" ng-change="changeTime()" style="display:inline-block;">
               <timepicker hour-step="1" minute-step="30" show-meridian="true" value="timeEnd" ></timepicker>
@@ -61,7 +52,14 @@
       <br />
     </div>
   </div>
-  
+  <div class="row">
+    <select>
+      <option value="">25%</option>
+      <option value="">50%</option>
+      <option value="">75%</option>
+      <option value="">100%</option>
+    </select>
+  </div>
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary {{availability <= 0 && 'disabled'}}" ng-click="ok()">OK</button>

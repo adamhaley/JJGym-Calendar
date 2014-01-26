@@ -31,8 +31,9 @@ class Api_Controller extends Template_Controller {
     }
     function get_events_by_date()
   	{
-     	$date = date("Y-m-d");
-     	// print_r($date);
+
+     	$date = $_GET['date']? $_GET['date'] : date("Y-m-d");
+
      	$event = new Event_Model;		
 		$events = $event->load_events_by_date($date);
 		$array = array();

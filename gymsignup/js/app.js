@@ -33,6 +33,7 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	    var ModalInstanceCtrl = function ($scope, $modalInstance, date) {
 	    	var date = moment().format('YYYY-MM-DD');
 
+	    	$scope.liveDate = date;
 	    	$scope.date = moment(date).format('dddd MMMM Do, YYYY');
 	    	// $scope.hour = moment(date).format('h:mma');
 	    	$scope.hour = moment(date).format("hh:mm");
@@ -47,17 +48,21 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	      /*calculate timeStart based on x position of click if month view
 	      */
 
-	      $scope.checkGymAvailability = function(timeStart,timeEnd){
+	      $scope.checkGymAvailability = function(timeStart,timeEnd,date){
+	      	var date = moment(date).format('YYYY-MM-DD');
+	      	var timeStart = moment(timeStart).format('HH:mm');//remove date from time
+	      	var timeEnd = moment(timeEnd).format('HH:mm');
 
+	      	console.log('in checkGymAvailability date is ' + date);
 	        var url = "/jjgym-calendar/gymsignup/index.php/api/get_events_by_date";
 	        url += "?date=" + date;
 	      	var checkAvailability = function(res){
-	            
+	          console.log(res);
 	        	rows = res.response;
 	         	overlappingEvents = _.filter(rows,function(row){
 		          //if the row overlaps our time boundaries
 		          // timeStart = moment(date + " " + timeStart);
-		          var range1 = moment(timeStart).twix(timeEnd);
+		          var range1 = moment(date + ' ' + timeStart).twix(date + ' ' + timeEnd);
 		          var range2 = moment(date + " " + row.time_start).twix(date + " " + row.time_end);
 
 		          if(range2.overlaps(range1)){
@@ -68,10 +73,10 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 			      //total up percentage
 			      //loop through every half hour time slot between timeStart and timeEnd
 			      var maxUsage = 0;
-			      for(i = 0; moment(timeStart).add('minutes', i * 30).isBefore(moment(timeEnd)); i++){
+			      for(i = 0; moment(date + ' ' + timeStart).add('minutes', i * 30).isBefore(moment(date + ' ' + timeEnd)); i++){
 			        var usage = 0;
-			        var rangeStart = moment(timeStart).add('minutes', i * 30);
-			        var rangeEnd = moment(timeStart).add('minutes', (i+1) * 30);
+			        var rangeStart = moment(date + ' ' + timeStart).add('minutes', i * 30);
+			        var rangeEnd = moment(date + ' ' + timeStart).add('minutes', (i+1) * 30);
 
 			        //filter overlappingEvents by events that occur in this range
 			        thisSlotOverlapping = _.filter(rows,function(row){
@@ -109,12 +114,12 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	      $scope.checkGymAvailability($scope.timeStart,$scope.timeEnd);
 
 	      $scope.TimepickerCtrl = function ($scope) {
-	        $scope.date = date;
+
 	        $scope.changeTime = function(){
 	          if(!moment($scope.timeEnd).isAfter($scope.timeStart)){
 	            $scope.timeEnd = moment($scope.timeStart).add('minutes',30).format();
 	          }  
-	          $scope.checkGymAvailability($scope.timeStart,$scope.timeEnd); 
+	          $scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.liveDate); 
 	        }
 
 	        $scope.clear = function() {
@@ -137,7 +142,13 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 					    $scope.dt = null;
 					  };
 
+					  $scope.changed = function(){
+					  	console.log('in changed..');
+					  	$scope.$parent.liveDate = moment($scope.dt).format('YYYY-MM-DD');
+					  	$scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.liveDate); 
+					  }
 					  // Disable weekend selection
+
 					  $scope.disabled = function(date, mode) {
 					    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
 					  };
@@ -155,11 +166,15 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 					  };
 
 					  $scope.prev = function(){
-					  	console.log('previous');
+					  	$scope.dt = moment($scope.dt).subtract('days',1).toDate();	
+					  	$scope.$parent.liveDate = moment($scope.dt).format('YYYY-MM-DD');
+					  	$scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.$parent.liveDate); 
 					  }
 
 					  $scope.next = function(){
-					  	console.log('next');
+					  	$scope.dt = moment($scope.dt).add('days',1).toDate();
+					  	$scope.$parent.liveDate = moment($scope.dt).format('YYYY-MM-DD');
+					  	$scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.$parent.liveDate); 
 					  }
 
 					  $scope.dateOptions = {
@@ -167,7 +182,6 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 					    'starting-day': 1
 					  };
 
-					  // $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
 					  $scope.format = 'longDate';
 				};
      
