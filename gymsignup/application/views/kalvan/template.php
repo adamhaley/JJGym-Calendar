@@ -6,7 +6,7 @@
 The Kalvan's Practice Space Calendar
 </title>
 <link rel="stylesheet" href="js/bower_components/bootstrap/dist/css/bootstrap.css" />
-
+<link rel="stylesheet" href="js/bower_components/bootstrap-select/bootstrap-select.css" />
 <link rel="stylesheet" href="js/bower_components/angular/angular-csp.css" /> 
 <link rel="stylesheet" href="css/main.css" /> 
 <!-- <script language="javascript" src="http://www.jjgym.com/js/prototype.js" ></script>  -->
@@ -60,7 +60,7 @@ The Kalvan's Practice Space Calendar
                 Rendered in {execution_time} seconds, using {memory_usage} of memory<br />
                 Calendar app developed by Adam Haley using Kohana
         </div>
-	
+
 	<script type="text/javascript" src="js/bower_components/jquery/jquery.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular/angular.js"></script>
 	<script type="text/javascript" src="js/bower_components/bootstrap/dist/js/bootstrap.js"></script>
@@ -70,9 +70,16 @@ The Kalvan's Practice Space Calendar
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/position/position.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/timepicker/timepicker.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/datepicker/datepicker.js"></script>
-	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>
+	<script type="text/javascript" src="js/bower_components/bootstrap-select/bootstrap-select.js"></script>
+
+	<!--<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>-->
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
+	<script>
+		$(document).ready(function(){
+			$('.selectpicker').selectpicker();
+		});
+	</script>
 </body>
 </html>

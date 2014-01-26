@@ -47,6 +47,11 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	      $scope.percentages = [25,50,75,100];
 	      /*calculate timeStart based on x position of click if month view
 	      */
+	      
+	    	var addSelectpicker = function(){
+	    		$('.selectpicker').selectpicker();
+	    	}
+	    	setTimeout(addSelectpicker,250);
 
 	      $scope.checkGymAvailability = function(timeStart,timeEnd,date){
 	      	var date = moment(date).format('YYYY-MM-DD');
@@ -113,6 +118,8 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	     
 	      $scope.checkGymAvailability($scope.timeStart,$scope.timeEnd);
 
+
+
 	      $scope.TimepickerCtrl = function ($scope) {
 
 	        $scope.changeTime = function(){
@@ -148,11 +155,11 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 					  	$scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.liveDate); 
 					  }
 					  // Disable weekend selection
-
+					  /*
 					  $scope.disabled = function(date, mode) {
 					    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
 					  };
-
+						*/
 					  $scope.toggleMin = function() {
 					    $scope.minDate = ( $scope.minDate ) ? null : new Date();
 					  };
@@ -212,8 +219,11 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	        }
 	      }
 	    });
+	   
+	    
 
 	    modalInstance.result.then(function () {
+	    	
 	      // $scope.selected = selectedItem;
 	    }, function () {
 	      $log.info('Modal dismissed');

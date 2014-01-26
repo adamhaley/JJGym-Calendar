@@ -53,12 +53,17 @@
     </div>
   </div>
   <div class="row">
-    <select>
-      <option value="">25%</option>
-      <option value="">50%</option>
-      <option value="">75%</option>
-      <option value="">100%</option>
-    </select>
+
+      Percentage:   
+        <select class="selectpicker" >
+          <option ng-disabled="percentage > availability" ng-model="availability" ng-repeat="percentage in percentages">{{percentage}}%</option>
+        </select>
+ 
+      
+  </div>
+  <div class="row">
+    Note: <input type="text" name="note" id="note"></input>
+  </div>
   </div>
 </div>
 <div class="modal-footer">
