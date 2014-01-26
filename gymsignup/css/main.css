@@ -95,6 +95,10 @@ p.copyright{
         border:1px solid #000;
         background-color:#efefef;
 }
+
+p.book-link{
+        cursor:pointer;
+}
 .delete{
         color: #dd0000;
 }

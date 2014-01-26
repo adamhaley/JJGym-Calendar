@@ -26,6 +26,14 @@ class Event_Model extends Model {
 
 		return $result;
 	}
+	public function load_events_by_date($date){
+
+    	$sql = "SELECT * from events where events.date = '" . $date . "' ";
+    	// echo($sql);
+    	$result = $this->db->query($sql);
+
+		return $result;
+	}
 	
 	public function insert_event($data)
 	{

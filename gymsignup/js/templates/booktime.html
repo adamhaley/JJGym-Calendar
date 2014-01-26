@@ -1,0 +1,48 @@
+<div class="modal-header">
+    <h3>Book Time: </h3>
+</div>
+<div class="modal-body">
+	Book me <b>{{ date }}</b> from:
+  <br />
+  <div class="row" ng-controller="TimepickerCtrl">
+    <div class="col-md-4">
+    <div ng-model="timeStart" ng-change="changeTime()" style="display:inline-block;">
+          <timepicker hour-step="1" minute-step="30" show-meridian="true" value="timeStart"></timepicker>
+    </div>
+    </div>
+    <div class="col-md-2 text-center"><br /><h4>to</h4> </div>
+    <div class="col-md-4">
+      <div ng-model="timeEnd" ng-change="changeTime()" style="display:inline-block;">
+            <timepicker hour-step="1" minute-step="30" show-meridian="true" value="timeEnd"></timepicker>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="alert alert-block {{availability > 0 && 'alert-success' || 'alert-danger'}}">
+      <div class="col-md-4">Gym Availability: </div>
+      <div class="col-md-3">{{availability}}%</div>
+      <!-- <div class="col-md-5">{{timeStart | date: 'shortTime'}} - {{timeEnd | date: 'shortTime'}}</div> -->
+      <br />
+    </div>
+  </div>
+  <div class="row">
+    <div class="alert-block">
+      <div class="col-md-4">
+
+        <div class="dropdown">
+          <button class="btn dropdown-toggle sr-only" type="button" id="dropdownMenu1" data-toggle="dropdown">Dropdown
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="perc in percentages">{{perc}}%</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary {{availability <= 0 && 'disabled'}}" ng-click="ok()">OK</button>
+    <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
+</div>

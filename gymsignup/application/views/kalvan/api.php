@@ -1,0 +1,4 @@
+{
+	"response":
+	<?php echo $content ?>
+}

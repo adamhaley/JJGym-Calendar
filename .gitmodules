@@ -1,0 +1,3 @@
+[submodule "kohana/modules/simple_rest"]
+	path = kohana/modules/simple_rest
+	url = git@github.com:samkeen/kohana-simple-REST.git

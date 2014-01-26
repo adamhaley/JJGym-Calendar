@@ -22,7 +22,7 @@ else
  * @see  http://kohanaframework.org/guide/using.configuration
  * @see  http://php.net/timezones
  */
-date_default_timezone_set('America/Chicago');
+date_default_timezone_set('America/Los Angeles');
 
 /**
  * Set the default locale.
@@ -97,10 +97,11 @@ Kohana::$config->attach(new Config_File);
  * Enable modules. Modules are referenced by a relative or absolute path.
  */
 Kohana::modules(array(
+	// 'simple_rest'  => MODPATH.'simple_rest'
 	// 'auth'       => MODPATH.'auth',       // Basic authentication
 	// 'cache'      => MODPATH.'cache',      // Caching with multiple backends
 	// 'codebench'  => MODPATH.'codebench',  // Benchmarking tool
-	// 'database'   => MODPATH.'database',   // Database access
+	'database'   => MODPATH.'database',   // Database access
 	// 'image'      => MODPATH.'image',      // Image manipulation
 	// 'orm'        => MODPATH.'orm',        // Object Relationship Mapping
 	// 'unittest'   => MODPATH.'unittest',   // Unit testing
@@ -116,3 +117,27 @@ Route::set('default', '(<controller>(/<action>(/<id>)))')
 		'controller' => 'welcome',
 		'action'     => 'index',
 	));
+
+/*
+ * This is to suppport URI's in the form: `/api/v1/users/42`
+ * The defaults section is optional, actually more RESTful to return 404 in 
+ * those cases.
+ */
+Route::set('api', '<directory>/<api_version>(/<controller>(/<resource_id>))',
+    array(
+        'directory'   => 'api',
+        'api_version' => 'v1'
+    ))
+    ->defaults(array(
+    'controller' => 'home',
+    'action'     => 'index',
+));
+/**
+ * This is the catch-all for NON API requests
+ * Could be used as api summary page with links to docs.
+ */
+Route::set('static', '(<controller>(/<action>(/<id>)))')
+  ->defaults(array(
+        'controller' => 'static',
+        'action'     => 'index',
+));

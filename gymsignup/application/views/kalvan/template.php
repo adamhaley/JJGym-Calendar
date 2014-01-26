@@ -1,5 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html data-ng-app="jjgym">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <title>
@@ -13,16 +13,17 @@ The Kalvan's Practice Space Calendar
 
 	<script type="text/javascript" src="http://www.jjgym.com/js/ckeditor/ckeditor.js"></script>
 	<script type="text/javascript">
+		/*
 		var config = {
         	toolbar : 'basic',
         	uiColor : '#fff'
     	}
-    	
-		CKEDITOR.replace( 'ckeditor',config);
 
+		CKEDITOR.replace( 'ckeditor',config);
+		*/
 	</script>
 </head>
-<body>
+<body data-ng-controller="CalendarController">
   <h1><a href="<?php echo $_SERVER['SCRIPT_NAME']; ?>">The Kalvan's Practice Space Calendar</a></h1>
 	Back to <a href="http://www.jjgym.com">JJGym homepage</a><br>
    <div id="login">
@@ -34,7 +35,7 @@ The Kalvan's Practice Space Calendar
 			if($this->uri->last_segment() == 'book_time'){
 				echo " [<a href='" .  $_SERVER['SCRIPT_NAME'] . "/calendar/'> &lt;&lt;Back To Calendar</a>]";
 			}else{
-				echo " [<a href='" .  $_SERVER['SCRIPT_NAME'] . "/calendar/book_time'>Reserve Time Slot</a>] "; 
+				echo " [<a class='book-link' data-ng-click='bookTime()'>Reserve Time Slot</a>] "; 
 			} 
 			if($_SESSION['uid'] == '2' || $_SESSION['uid'] == '9' || $_SESSION['uid'] =='1'){
 				echo " [<a href='" . $_SERVER['SCRIPT_NAME'] . "/admin'>Edit Announcements</a>]";
@@ -60,13 +61,15 @@ The Kalvan's Practice Space Calendar
         </div>
 	
 	<script type="text/javascript" src="js/bower_components/jquery/jquery.js"></script>
-	<script type="text/javascript" src="js/bower_components/angular/angular.min.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular/angular.js"></script>
 	<script type="text/javascript" src="js/bower_components/bootstrap/dist/js/bootstrap.js"></script>
 	<script type="text/javascript" src="js/bower_components/moment/moment.js"></script>
 	<script type="text/javascript" src="js/bower_components/twix/bin/twix.js"></script>
-	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
+	
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/timepicker/timepicker.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>
 	<script type="text/javascript" src="js/app.js"></script>
 </body>
 </html>
