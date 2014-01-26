@@ -40,14 +40,14 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	      // $scope.date = date;
 	      $scope.availability = 0;
 	     
-	    	$scope.timeStart = moment(date + ' ' + $scope.hour).format();
-	     	$scope.timeEnd = moment(date + ' ' + $scope.hour).add(1,'hours').format();
+	    	$scope.timeStart = moment(date + ' 13:00').format();
+	     	$scope.timeEnd = moment($scope.timeStart).add(1,'hours').format();
 	      
 	      //percentages
 	      $scope.percentages = [25,50,75,100];
 	      /*calculate timeStart based on x position of click if month view
 	      */
-	      
+
 	    	var addSelectpicker = function(){
 	    		$('.selectpicker').selectpicker();
 	    	}
