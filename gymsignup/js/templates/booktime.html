@@ -54,19 +54,18 @@
   </div>
   <div class="row">
 
-      Percentage:   
-        <select class="selectpicker" >
-          <option ng-disabled="percentage > availability" ng-model="availability" ng-repeat="percentage in percentages">{{percentage}}%</option>
-        </select>
+      Percentage: 
+        <select class="form-control">
+        <option ng-disabled="percentage > availability" ng-repeat="percentage in percentages">{{percentage}}%</option></select>
  
       
   </div>
   <div class="row">
-    Note: <input type="text" name="note" id="note"></input>
+    Note: <input type="text" class="form-control" name="note" id="note"></input>
   </div>
   </div>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary {{availability <= 0 && 'disabled'}}" ng-click="ok()">OK</button>
+    <button class="btn btn-primary {{availability <= 0 && 'disabled'}}" ng-click="ok()">Book It!</button>
     <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
 </div>
