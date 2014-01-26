@@ -6,13 +6,14 @@
 The Kalvan's Practice Space Calendar
 </title>
 <link rel="stylesheet" href="js/bower_components/bootstrap/dist/css/bootstrap.css" />
+
 <link rel="stylesheet" href="js/bower_components/angular/angular-csp.css" /> 
-<link rel="stylesheet" href="http://www.jjgym.com/gymsignup/css/main.css" />
+<link rel="stylesheet" href="css/main.css" /> 
 <!-- <script language="javascript" src="http://www.jjgym.com/js/prototype.js" ></script>  -->
 
 
-	<script type="text/javascript" src="http://www.jjgym.com/js/ckeditor/ckeditor.js"></script>
-	<script type="text/javascript">
+	<!--<script type="text/javascript" src="http://www.jjgym.com/js/ckeditor/ckeditor.js"></script>
+	--><script type="text/javascript">
 		/*
 		var config = {
         	toolbar : 'basic',
@@ -66,7 +67,9 @@ The Kalvan's Practice Space Calendar
 	<script type="text/javascript" src="js/bower_components/moment/moment.js"></script>
 	<script type="text/javascript" src="js/bower_components/twix/bin/twix.js"></script>
 	<script type="text/javascript" src="js/bower_components/underscore/underscore.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/position/position.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/timepicker/timepicker.js"></script>
+	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/datepicker/datepicker.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/modal/modal.js"></script>

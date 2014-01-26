@@ -1,4 +1,4 @@
-var app = angular.module("jjgym", ['ui.bootstrap.modal','ui.bootstrap.timepicker','jjgym.controllers']);
+var app = angular.module("jjgym", ['ui.bootstrap.modal','ui.bootstrap.datepicker', 'ui.bootstrap.timepicker','jjgym.controllers']);
 
 var ctrls = angular.module('jjgym.controllers',[]);
 
@@ -46,69 +46,61 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	      $scope.percentages = [25,50,75,100];
 	      /*calculate timeStart based on x position of click if month view
 	      */
+
 	      $scope.checkGymAvailability = function(timeStart,timeEnd){
 
-	        // var url = "/api/check-availability";
 	        var url = "/jjgym-calendar/gymsignup/index.php/api/get_events_by_date";
-	        url += "?date=" + timeStart;
-	       
+	        url += "?date=" + date;
+	      	var checkAvailability = function(res){
+	            
+	        	rows = res.response;
+	         	overlappingEvents = _.filter(rows,function(row){
+		          //if the row overlaps our time boundaries
+		          // timeStart = moment(date + " " + timeStart);
+		          var range1 = moment(timeStart).twix(timeEnd);
+		          var range2 = moment(date + " " + row.time_start).twix(date + " " + row.time_end);
+
+		          if(range2.overlaps(range1)){
+		            return row;
+		          } 
+		      	});
+	      
+			      //total up percentage
+			      //loop through every half hour time slot between timeStart and timeEnd
+			      var maxUsage = 0;
+			      for(i = 0; moment(timeStart).add('minutes', i * 30).isBefore(moment(timeEnd)); i++){
+			        var usage = 0;
+			        var rangeStart = moment(timeStart).add('minutes', i * 30);
+			        var rangeEnd = moment(timeStart).add('minutes', (i+1) * 30);
+
+			        //filter overlappingEvents by events that occur in this range
+			        thisSlotOverlapping = _.filter(rows,function(row){
+			          //if the row overlaps our time boundaries
+			          var range1 = rangeStart.twix(rangeEnd);
+			          var range2 = moment(date + " " + row.time_start).twix(date + " " + row.time_end);
+			          if(range2.overlaps(range1)){
+			            return row;
+			          }
+			        });
+			        //add up usage percentage
+			        _.each(thisSlotOverlapping,function(row){
+			          usage += parseInt(row.usage);
+			        });
+			        maxUsage = usage > maxUsage? usage : maxUsage;
+			      }
+
+			      var out = {
+			        overlappingEvents: overlappingEvents,
+			        usage: maxUsage,
+			        available: 100 - maxUsage
+			      }
+						$scope.availability = out.available;
+	          $scope.overlappingEvents = res.overlappingEvents;
+	        } 
 
 	        var app = this;
 	        $http.get(url)
-	          .success(function(res){
-	            
-	            	rows = res.response;
-	             	overlappingEvents = _.filter(rows,function(row){
-				          //if the row overlaps our time boundaries
-				          // timeStart = moment(date + " " + timeStart);
-				          var range1 = moment(timeStart).twix(timeEnd);
-				          var range2 = moment(date + " " + row.time_start).twix(date + " " + row.time_end);
-
-/*
-				          console.log('timeStart is ' + timeStart);
-				          console.log('time_start is ' + row.time_start);
-				          console.log('timeEnd is ' + timeEnd);
-				          console.log('time_end is ' + row.time_end);
-				          console.log('range1 valid: ' + range1.isValid());
-				          console.log('range2 valid: ' + range2.isValid());
-*/
-				          if(range2.overlaps(range1)){
-				            return row;
-				          } 
-				      	});
-		      
-				      //total up percentage
-				      //loop through every half hour time slot between timeStart and timeEnd
-				      var maxUsage = 0;
-				      for(i = 0; moment(timeStart).add('minutes', i * 30).isBefore(moment(timeEnd)); i++){
-				        var usage = 0;
-				        var rangeStart = moment(timeStart).add('minutes', i * 30);
-				        var rangeEnd = moment(timeStart).add('minutes', (i+1) * 30);
-
-				        //filter overlappingEvents by events that occur in this range
-				        thisSlotOverlapping = _.filter(rows,function(row){
-				          //if the row overlaps our time boundaries
-				          var range1 = rangeStart.twix(rangeEnd);
-				          var range2 = moment(date + " " + row.time_start).twix(date + " " + row.time_end);
-				          if(range2.overlaps(range1)){
-				            return row;
-				          }
-				        });
-				        //add up usage percentage
-				        _.each(thisSlotOverlapping,function(row){
-				          usage += parseInt(row.usage);
-				        });
-				        maxUsage = usage > maxUsage? usage : maxUsage;
-				      }
-
-				      var out = {
-				        overlappingEvents: overlappingEvents,
-				        usage: maxUsage,
-				        available: 100 - maxUsage
-				      }
-							$scope.availability = out.available;
-	            $scope.overlappingEvents = res.overlappingEvents;
-	          })
+	          .success(checkAvailability)
 	          .error(function(res){
 	            console.log(res);
 	          });  
@@ -129,6 +121,56 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	          $scope.hour = null;
 	        };
 	      };
+
+	      $scope.DatepickerCtrl = function ($scope) {
+					  $scope.today = function() {
+					    $scope.dt = new Date();
+					  };
+					  $scope.today();
+
+					  $scope.showWeeks = true;
+					  $scope.toggleWeeks = function () {
+					    $scope.showWeeks = ! $scope.showWeeks;
+					  };
+
+					  $scope.clear = function () {
+					    $scope.dt = null;
+					  };
+
+					  // Disable weekend selection
+					  $scope.disabled = function(date, mode) {
+					    return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+					  };
+
+					  $scope.toggleMin = function() {
+					    $scope.minDate = ( $scope.minDate ) ? null : new Date();
+					  };
+					  $scope.toggleMin();
+
+					  $scope.open = function($event) {
+					    $event.preventDefault();
+					    $event.stopPropagation();
+
+					    $scope.opened = true;
+					  };
+
+					  $scope.prev = function(){
+					  	console.log('previous');
+					  }
+
+					  $scope.next = function(){
+					  	console.log('next');
+					  }
+
+					  $scope.dateOptions = {
+					    'year-format': "'yy'",
+					    'starting-day': 1
+					  };
+
+					  // $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'shortDate'];
+					  $scope.format = 'longDate';
+				};
+     
 
 	      $scope.ok = function () {
 	        $modalInstance.close();
