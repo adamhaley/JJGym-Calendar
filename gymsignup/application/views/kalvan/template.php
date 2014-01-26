@@ -65,7 +65,7 @@ The Kalvan's Practice Space Calendar
 	<script type="text/javascript" src="js/bower_components/bootstrap/dist/js/bootstrap.js"></script>
 	<script type="text/javascript" src="js/bower_components/moment/moment.js"></script>
 	<script type="text/javascript" src="js/bower_components/twix/bin/twix.js"></script>
-	
+	<script type="text/javascript" src="js/bower_components/underscore/underscore.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/timepicker/timepicker.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/dropdownToggle/dropdownToggle.js"></script>
 	<script type="text/javascript" src="js/bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
