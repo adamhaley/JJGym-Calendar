@@ -9,7 +9,7 @@ mysql_select_db('jjgym_calendar',$link);
 
 header('Content-type:text/json');
 
-$q = "SELECT e.user_id, e.comments, e.date, e.time_start, e.time_end, u.name_first, u.name_last from events as e, users as u where u.id = e.user_id and (u.id = '9' or u.id = '2') and e.comments LIKE '%acro%' order by date desc;";
+$q = "SELECT e.user_id, e.comments, e.date, e.time_start, e.time_end, u.name_first, u.name_last, '6232 Mary Ellen Ave. Van Nuys, CA 91401' as address from events as e, users as u where u.id = e.user_id and (u.id = '9' or u.id = '2') and e.comments LIKE '%acro%' order by date desc;";
 
 $result = mysql_query($q,$link);
 $rows = Array();
