@@ -42,7 +42,8 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	     
 	    	$scope.timeStart = moment(date + ' 13:00').format();
 	     	$scope.timeEnd = moment($scope.timeStart).add(1,'hours').format();
-	      
+
+	     
 	      //percentages
 	      $scope.percentages = [25,50,75,100];
 	      /*calculate timeStart based on x position of click if month view
@@ -55,14 +56,18 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 
 	      $scope.checkGymAvailability = function(timeStart,timeEnd,date){
 	      	var date = moment(date).format('YYYY-MM-DD');
+	      	console.log('timeStart is ' + timeStart + ' and timeEnd is ' + timeEnd);
 	      	var timeStart = moment(timeStart).format('HH:mm');//remove date from time
 	      	var timeEnd = moment(timeEnd).format('HH:mm');
 
 	      	console.log('in checkGymAvailability date is ' + date);
+	      	
 	        var url = "/jjgym-calendar/gymsignup/index.php/api/get_events_by_date";
 	        url += "?date=" + date;
+	     
+
 	      	var checkAvailability = function(res){
-	          console.log(res);
+	     
 	        	rows = res.response;
 	         	overlappingEvents = _.filter(rows,function(row){
 		          //if the row overlaps our time boundaries
@@ -104,6 +109,7 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 			        usage: maxUsage,
 			        available: 100 - maxUsage
 			      }
+			      console.log(out.available);
 						$scope.availability = out.available;
 	          $scope.overlappingEvents = res.overlappingEvents;
 	        } 
@@ -175,6 +181,7 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 					  $scope.prev = function(){
 					  	$scope.dt = moment($scope.dt).subtract('days',1).toDate();	
 					  	$scope.$parent.liveDate = moment($scope.dt).format('YYYY-MM-DD');
+
 					  	$scope.checkGymAvailability($scope.timeStart,$scope.timeEnd,$scope.$parent.liveDate); 
 					  }
 
