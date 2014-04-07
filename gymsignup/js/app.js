@@ -37,8 +37,8 @@ ctrls.controller('CalendarController', function($scope,$location,$modal,$http,$l
 	    	$scope.date = moment(date).format('dddd MMMM Do, YYYY');
 	    	// $scope.hour = moment(date).format('h:mma');
 	    	$scope.hour = moment(date).format("hh:mm");
-	      // $scope.date = date;
-	      $scope.availability = 0;
+	      	// $scope.date = date;
+	      	$scope.availability = 0;
 	     
 	    	$scope.timeStart = moment(date + ' 13:00').format();
 	     	$scope.timeEnd = moment($scope.timeStart).add(1,'hours').format();
