@@ -65,6 +65,9 @@
                 </div>
                 <div class="formfield">
 		<select name="time_start">
+
+			<option value="9:00">7:00 am</option>
+			<option value="9:30">7:30 am</option>
 			<option value="8:00">8:00 am</option>
 			<option value="8:30">8:30 am</option>
 			<option value="9:00">9:00 am</option>
@@ -108,6 +111,8 @@
 		</div>
 		<div class="formfield">
 			<select name="time_end">
+						<option value="9:00">7:00 am</option>
+						<option value="9:30">7:30 am</option>
                         <option value="8:00">8:00 am</option>
                         <option value="8:30">8:30 am</option>
                         <option value="9:00">9:00 am</option>
