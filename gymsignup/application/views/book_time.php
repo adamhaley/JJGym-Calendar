@@ -4,7 +4,7 @@
 		form = document.forms[0];        
 		form.date_month.selectedIndex = month-1;
 		form.date_day.selectedIndex = day-1;
-		form.date_year.selectedIndex = year==2012? 0 : 1;
+		form.date_year.selectedIndex = year==2018? 0 : 1;
 	}
 	
 	function showCalendar(){
