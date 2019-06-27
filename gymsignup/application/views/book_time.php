@@ -1,6 +1,6 @@
 <script>
         function selectDay(month,day,year){
-          	//alert('month is ' + month + ', day is ' + day + ' and year is ' + year);
+        alert('month is ' + month + ', day is ' + day + ' and year is ' + year);
 		form = document.forms[0];        
 		form.date_month.selectedIndex = month-1;
 		form.date_day.selectedIndex = day-1;
@@ -48,12 +48,12 @@
 				?>
 			</select>
 			<select name="date_year">
-                                <?
-                                for($i=date("Y");$i<=date("Y")+1;$i++){
-                                        echo "<option value='$i'>$i</option>";
-                                }
-                                ?>
-                        </select>
+                    <?
+                    for($i=date("Y");$i<=date("Y")+1;$i++){
+                            echo "<option value='$i'>$i</option>";
+                    }
+                    ?>
+            </select>
 			<!--
 			[<a href="#" onClick="showCalendar();">Calendar</a>]
 			-->
@@ -155,9 +155,9 @@
                 <div class="formfield">
                 	<select name="usage">
                         	<option value="25">25%</option>
-				<option value="50">50%</option>
-				<option value="75">75%</option>
-				<option value="100">100%</option>
+							<option value="50">50%</option>
+							<option value="75">75%</option>
+							<option value="100">100%</option>
                         </select>
                         <br />
 		</div>
@@ -167,7 +167,7 @@
 			Note:
                 </div>
                 <div class="formfield">
-			<input type="text" size="30" name="comments" value="<?if(isset($event->comments)){echo $event->comments;}?>"/>
+					<input type="text" size="30" name="comments" value="<?if(isset($event->comments)){echo $event->comments;}?>"/>
                 </div>
 	</div>
 	<script>
@@ -183,7 +183,7 @@
         		Repeat Weekly: 
 	       </div>
                 <div class="formfield">
-			<input type="checkbox" name="repeat" onChange="toggleRepeatDate()"/>
+					<input type="checkbox" name="repeat" onChange="toggleRepeatDate()"/>
                 </div>
 	</div>
 	<div style="display:none;" id="repeatDate">
