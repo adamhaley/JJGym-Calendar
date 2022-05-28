@@ -1,11 +1,11 @@
 <script>
         function selectDay(month,day,year){
-        alert('month is ' + month + ', day is ' + day + ' and year is ' + year);
-		form = document.forms[0];        
-		form.date_month.selectedIndex = month-1;
-		form.date_day.selectedIndex = day-1;
-		form.date_year.selectedIndex = year==2018? 0 : 1;
-	}
+            alert('month is ' + month + ', day is ' + day + ' and year is ' + year);
+		    form = document.forms[0];        
+		    form.date_month.selectedIndex = month-1;
+		    form.date_day.selectedIndex = day-1;
+            form.date_year.selectedIndex = (year==(new Date()).getFullYear())? 0 : 1;
+        }
 	
 	function showCalendar(){
 		//alert('in show calendar');

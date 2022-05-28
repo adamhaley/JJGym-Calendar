@@ -31,11 +31,11 @@ $config['default'] = array
 	(
 		'type'     => 'mysql',
 		'user'     => 'root',
-		'pass'     => 'root',
+		'pass'     => '',
 		'host'     => 'localhost',
 		'port'     => FALSE,
 		'socket'   => FALSE,
-		'database' => 'jjgym_calendar'
+		'database' => 'jjgym_calendar_new'
 	),
 	'character_set' => 'utf8',
 	'table_prefix'  => '',
