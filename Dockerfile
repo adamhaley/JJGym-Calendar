@@ -9,4 +9,10 @@ RUN chown -R www-data:www-data /var/www/html
 
 RUN docker-php-ext-install mysql
 
+FROM ubuntu
+
+CMD apt-get update && apt-get install -y vim
+
+FROM php:5.4-apache
+
 CMD ["/usr/sbin/apachectl", "-D", "FOREGROUND"]
